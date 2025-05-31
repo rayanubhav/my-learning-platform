@@ -8,7 +8,7 @@ function TestGradingForm({ user, token }) {
   const [grade, setGrade] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
 
   const handleSubmit = async (e) => {
     e.preventDefault();

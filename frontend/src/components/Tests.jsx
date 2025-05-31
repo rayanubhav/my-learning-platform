@@ -7,7 +7,7 @@ function Tests({ user, token }) {
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
   const [error, setError] = useState('');
-  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     fetchTests();
   }, [courseId, token]);

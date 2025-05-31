@@ -12,7 +12,7 @@ function Register({ setUser, setToken }) {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
