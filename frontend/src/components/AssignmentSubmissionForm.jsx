@@ -12,10 +12,8 @@ function AssignmentSubmissionForm({ user, token }) {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Get Cloudinary cloud name from environment variable
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
 
-  // Function to open Cloudinary upload widget for videos
   const openVideoUploadWidget = () => {
     if (!cloudName) {
       setError('Cloudinary cloud name is not configured.');
@@ -24,17 +22,16 @@ function AssignmentSubmissionForm({ user, token }) {
 
     window.cloudinary.createUploadWidget(
       {
-        cloudName: cloudName, // Use environment variable
-        uploadPreset: 'unsigned_preset_1', // Replace with your unsigned upload preset
+        cloudName: cloudName,
+        uploadPreset: 'unsigned_preset_1',
         sources: ['local', 'url', 'dropbox', 'google_drive'],
-        resourceType: 'video', // Restrict to video uploads
-        maxFileSize: 100000000, // 100MB limit
-        clientAllowedFormats: ['mp4', 'webm', 'mov'], // Allowed video formats
+        resourceType: 'video',
+        maxFileSize: 100000000,
+        clientAllowedFormats: ['mp4', 'webm', 'mov'],
       },
       (error, result) => {
         if (!error && result && result.event === 'success') {
           setVideoUrl(result.info.secure_url);
-          console.log('Video uploaded:', result.info.secure_url);
         } else if (error) {
           setError('Failed to upload video: ' + error.message);
         }
@@ -42,7 +39,6 @@ function AssignmentSubmissionForm({ user, token }) {
     ).open();
   };
 
-  // Function to open Cloudinary upload widget for Word files
   const openWordUploadWidget = () => {
     if (!cloudName) {
       setError('Cloudinary cloud name is not configured.');
@@ -51,17 +47,16 @@ function AssignmentSubmissionForm({ user, token }) {
 
     window.cloudinary.createUploadWidget(
       {
-        cloudName: cloudName, // Use environment variable
-        uploadPreset: 'unsigned_preset_1', // Replace with your unsigned upload preset
+        cloudName: cloudName,
+        uploadPreset: 'unsigned_preset_1',
         sources: ['local', 'url', 'dropbox', 'google_drive'],
-        resourceType: 'raw', // Use 'raw' for non-media files like Word
-        maxFileSize: 10000000, // 10MB limit
-        clientAllowedFormats: ['doc', 'docx'], // Allowed Word formats
+        resourceType: 'raw',
+        maxFileSize: 10000000,
+        clientAllowedFormats: ['doc', 'docx'],
       },
       (error, result) => {
         if (!error && result && result.event === 'success') {
           setWordUrl(result.info.secure_url);
-          console.log('Word file uploaded:', result.info.secure_url);
         } else if (error) {
           setError('Failed to upload Word file: ' + error.message);
         }
@@ -69,7 +64,6 @@ function AssignmentSubmissionForm({ user, token }) {
     ).open();
   };
 
-  // Function to open Cloudinary upload widget for PDF files
   const openPdfUploadWidget = () => {
     if (!cloudName) {
       setError('Cloudinary cloud name is not configured.');
@@ -78,17 +72,16 @@ function AssignmentSubmissionForm({ user, token }) {
 
     window.cloudinary.createUploadWidget(
       {
-        cloudName: cloudName, // Use environment variable
-        uploadPreset: 'unsigned_preset_1', // Replace with your unsigned upload preset
+        cloudName: cloudName,
+        uploadPreset: 'unsigned_preset_1',
         sources: ['local', 'url', 'dropbox', 'google_drive'],
-        resourceType: 'raw', // Use 'raw' for non-media files like PDF
-        maxFileSize: 10000000, // 10MB limit
-        clientAllowedFormats: ['pdf'], // Allowed PDF format
+        resourceType: 'raw',
+        maxFileSize: 10000000,
+        clientAllowedFormats: ['pdf'],
       },
       (error, result) => {
         if (!error && result && result.event === 'success') {
           setPdfUrl(result.info.secure_url);
-          console.log('PDF file uploaded:', result.info.secure_url);
         } else if (error) {
           setError('Failed to upload PDF file: ' + error.message);
         }

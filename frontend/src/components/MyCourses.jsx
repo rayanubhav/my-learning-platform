@@ -7,7 +7,6 @@ function MyCourses({ user, token }) {
 
   useEffect(() => {
     if (token && user) {
-      console.log('Fetching my-courses for user:', user.email);
       fetch('http://localhost:5000/api/courses/my-courses', {
         headers: { 'x-auth-token': token },
       })
@@ -20,11 +19,9 @@ function MyCourses({ user, token }) {
           return res.json();
         })
         .then(data => {
-          console.log('My courses data:', data);
           setCourses(data);
         })
         .catch(err => {
-          console.error('My courses fetch error:', err.message);
           setError('Failed to load courses: ' + err.message);
         });
     }

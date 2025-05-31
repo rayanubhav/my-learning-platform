@@ -8,12 +8,12 @@ function CourseContentForm({ user, token }) {
   const [assignment, setAssignment] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
 
-  // Function to open Cloudinary upload widget for videos
   const openUploadWidget = () => {
     window.cloudinary.createUploadWidget(
       {
-        cloudName: 'dklm7c2xi',
+        cloudName: cloudName,
         uploadPreset: 'unsigned_preset_1',
         sources: ['local', 'url', 'camera', 'dropbox', 'google_drive'],
         resourceType: 'video',
@@ -23,7 +23,6 @@ function CourseContentForm({ user, token }) {
       (error, result) => {
         if (!error && result && result.event === 'success') {
           setVideo(result.info.secure_url);
-          console.log('Video uploaded:', result.info.secure_url);
         } else if (error) {
           setError('Failed to upload video: ' + error.message);
         }

@@ -6,18 +6,15 @@ function Courses({ user, token }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    console.log('Fetching all courses');
     fetch('http://localhost:5000/api/courses')
       .then(res => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
         return res.json();
       })
       .then(data => {
-        console.log('Courses data:', data);
         setCourses(data);
       })
       .catch(err => {
-        console.error('Courses fetch error:', err);
         setError('Failed to load courses: ' + err.message);
       });
   }, []);

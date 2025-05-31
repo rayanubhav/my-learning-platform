@@ -11,8 +11,8 @@ function CourseDetails({ user, token }) {
   const [submissions, setSubmissions] = useState([]);
   const [progress, setProgress] = useState([]);
   const [error, setError] = useState('');
-  const [selectedVideo, setSelectedVideo] = useState(null); // For modal
-  const [videoWatched, setVideoWatched] = useState(null); // Track which video was watched
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [videoWatched, setVideoWatched] = useState(null);
 
   useEffect(() => {
     if (!token || !user) {
@@ -20,20 +20,15 @@ function CourseDetails({ user, token }) {
       return;
     }
 
-    console.log('User role:', user?.role); // Debug user role
-
     const fetchCourse = async () => {
       try {
-        console.log('Fetching course:', courseId);
         const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
           headers: { 'x-auth-token': token },
         });
         if (!res.ok) throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
         const data = await res.json();
-        console.log('Course data:', data);
         setCourse(data);
       } catch (err) {
-        console.error('Course fetch error:', err);
         setError(`Failed to load course: ${err.message}`);
       }
     };
@@ -45,10 +40,9 @@ function CourseDetails({ user, token }) {
         });
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const data = await res.json();
-        console.log('Assignment submissions data:', data);
         setSubmissions(data);
       } catch (err) {
-        console.error('Assignment submissions fetch error:', err);
+        console.log(err)
       }
     };
 
@@ -60,10 +54,8 @@ function CourseDetails({ user, token }) {
         });
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const data = await res.json();
-        console.log('Video progress data:', data);
         setProgress(data || []);
       } catch (err) {
-        console.error('Video progress fetch error:', err);
         setProgress([]);
       }
     };
@@ -93,12 +85,10 @@ function CourseDetails({ user, token }) {
           }
           return updatedProgress;
         });
-        setVideoWatched(videoIndex); // Update the watched state
-      } else {
-        console.error('Failed to mark video as watched:', data.msg); // Log error instead of displaying
+        setVideoWatched(videoIndex);
       }
     } catch (err) {
-      console.error('Server error marking video as watched:', err.message); // Log error
+      console.log(err)
     }
   };
 
@@ -110,7 +100,6 @@ function CourseDetails({ user, token }) {
     return <p className="text-gray-600 text-center mt-10 dark:text-gray-400">Loading...</p>;
   }
 
-  // Calculate progress percentage (for students only)
   const totalVideos = course.videos?.length || 0;
   const watchedVideos = progress.filter((p) => p.watched).length;
   const progressPercentage = totalVideos > 0 ? Math.round((watchedVideos / totalVideos) * 100) : 0;
@@ -126,7 +115,6 @@ function CourseDetails({ user, token }) {
         Enrolled Students: {course.enrolledStudents?.length || 0}
       </p>
 
-      {/* Display progress for students */}
       {user?.role === 'student' && totalVideos > 0 && (
         <div className="mb-6 p-4 bg-blue-100 dark:bg-blue-800 rounded-md">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Your Progress</h3>
@@ -135,9 +123,9 @@ function CourseDetails({ user, token }) {
               value={progressPercentage}
               text={`${progressPercentage}%`}
               styles={buildStyles({
-                textColor: '#1f2937', // Dark gray for light mode
-                pathColor: '#2563eb', // Blue for the progress path
-                trailColor: '#d1d5db', // Light gray for the trail
+                textColor: '#1f2937',
+                pathColor: '#2563eb',
+                trailColor: '#d1d5db',
                 textSize: '24px',
               })}
             />
@@ -163,21 +151,15 @@ function CourseDetails({ user, token }) {
                     key={index}
                     className="bg-gray-100 dark:bg-gray-700 p-4 rounded-md shadow-sm hover:shadow-md transition"
                   >
-                    {/* Video Thumbnail */}
                     <video
                       src={video}
                       className="w-full h-32 object-cover rounded-md mb-2"
                       muted
                       onClick={() => setSelectedVideo({ url: video, index })}
-                      onError={(e) => console.error('Video thumbnail error:', e)}
                     />
-
-                    {/* Title */}
                     <h5 className="text-md font-medium text-gray-900 dark:text-white">
                       Video {index + 1}
                     </h5>
-
-                    {/* Watched Indicator and Watch Now Button */}
                     <div className="mt-2 flex justify-between items-center">
                       {user?.role === 'student' && (
                         <span
@@ -241,7 +223,6 @@ function CourseDetails({ user, token }) {
         </div>
       </div>
 
-      {/* Video Modal */}
       {selectedVideo && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-4 rounded-lg max-w-3xl w-full">
@@ -267,7 +248,6 @@ function CourseDetails({ user, token }) {
                   markAsWatched(selectedVideo.index);
                 }
               }}
-              onError={(e) => console.error('Video playback error:', e)}
             />
           </div>
         </div>

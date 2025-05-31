@@ -4,6 +4,8 @@ import PIL
 import numpy as np
 import google.generativeai as genai
 import streamlit as st
+import requests
+import datetime
 from streamlit_extras.add_vertical_space import add_vertical_space
 from mediapipe.python.solutions import hands, drawing_utils
 
@@ -13,26 +15,22 @@ warnings.filterwarnings(action='ignore')
 
 st.set_page_config(page_title='AI App', layout="wide")
 
-GOOGLE_API_KEY="AIzaSyBiAMiZ0GSqTtaMIeBXzuv38-JHJJ8sy8w"
-#deployment error
+# Load GOOGLE_API_KEY from .env
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    st.error("GOOGLE_API_KEY is not set in .env file")
+    st.stop()
 
 class DrawInAir:
     def __init__(self):
-        
-
         self.cap = cv2.VideoCapture(0)
         self.cap.set(propId=cv2.CAP_PROP_FRAME_WIDTH, value=950)
         self.cap.set(propId=cv2.CAP_PROP_FRAME_HEIGHT, value=550)
         self.cap.set(propId=cv2.CAP_PROP_BRIGHTNESS, value=130)
-
         self.imgCanvas = np.zeros(shape=(550, 950, 3), dtype=np.uint8)
-
         self.mphands = hands.Hands(max_num_hands=1, min_detection_confidence=0.75)
-
         self.p1, self.p2 = 0, 0
-
         self.p_time = 0
-
         self.fingers = []
 
     def streamlit_config(self):
@@ -48,11 +46,8 @@ class DrawInAir:
         </style>
         """
         st.markdown(page_background_color, unsafe_allow_html=True)
-
         st.markdown(f'<h1 style="text-align: center;">DrawInAir</h1>', unsafe_allow_html=True)
         add_vertical_space(1)
-
-        
 
     def process_frame(self):
         success, img = self.cap.read()
@@ -117,19 +112,44 @@ class DrawInAir:
         img = cv2.bitwise_and(src1=img, src2=imgInv)
         self.img = cv2.bitwise_or(src1=img, src2=self.imgCanvas)
 
+    def send_proctoring_event(self, event_type, user_id="student123"):
+        try:
+            url = "http://localhost:5000/api/proctoring/log"
+            data = {
+                "userId": user_id,  # Replace with actual user ID (e.g., from JWT)
+                "event": event_type,
+                "timestamp": str(datetime.datetime.now())
+            }
+            headers = {"Content-Type": "application/json"}
+            response = requests.post(url, json=data, headers=headers)
+            return response.json()
+        except Exception as e:
+            st.error(f"Error sending proctoring event: {str(e)}")
+            return None
+
+    def send_webcam_snapshot(self, user_id="student123"):
+        try:
+            _, buffer = cv2.imencode('.jpg', self.img)
+            files = {'snapshot': ('snapshot.jpg', buffer, 'image/jpeg')}
+            data = {'userId': user_id, 'timestamp': str(datetime.datetime.now())}
+            response = requests.post('http://localhost:5000/api/proctoring/snapshot', files=files, data=data)
+            return response.json()
+        except Exception as e:
+            st.error(f"Error sending snapshot: {str(e)}")
+            return None
+
     def analyze_image_with_genai(self):
         imgCanvas = cv2.cvtColor(self.imgCanvas, cv2.COLOR_BGR2RGB)
         imgCanvas = PIL.Image.fromarray(imgCanvas)
         genai.configure(api_key=GOOGLE_API_KEY)
         model = genai.GenerativeModel(model_name='gemini-1.5-flash')
         prompt = "Analyze the image and provide the following:\n" \
-         "* If a mathematical equation is present:\n" \
-         "   - The equation represented in the image.\n" \
-         "   - The solution to the equation.\n" \
-         "   - A short explanation of the steps taken to arrive at the solution.\n" \
-         "* If a drawing is present and no equation is detected:\n" \
-         "   - A brief description of the drawn image in simple terms.\n"
-
+                 "* If a mathematical equation is present:\n" \
+                 "   - The equation represented in the image.\n" \
+                 "   - The solution to the equation.\n" \
+                 "   - A short explanation of the steps taken to arrive at the solution.\n" \
+                 "* If a drawing is present and no equation is detected:\n" \
+                 "   - A brief description of the drawn image in simple terms.\n"
         response = model.generate_content([prompt, imgCanvas])
         return response.text
 
@@ -138,24 +158,26 @@ class DrawInAir:
         with col1:
             stframe = st.empty()
         with col3:
-            
             st.markdown("""
                 <h5 style="text-align: center;">Finger Gestures:</h5>
                 <ul>
                     <li><b>Thumb + Index:</b> Start drawing.</li>
                     <li><b>Thumb + Middle:</b> Erase the drawing.</li>
-                    <li><b>Thumb + Index + Middle:</b>Move </li>
+                    <li><b>Thumb + Index + Middle:</b> Move </li>
                     <li><b>Thumb + Pinky:</b> Clear drawing.</li>
                     <li><b>Index + Middle:</b> Search/Calculate.</li>
                 </ul>
                 """, unsafe_allow_html=True)
-            st.markdown(f'<h5 style="text-position:center;color:cyan;">OUTPUT:</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5 style="text-align: center;color: cyan;">OUTPUT:</h5>', unsafe_allow_html=True)
             result_placeholder = st.empty()
+
+        last_snapshot_time = 0
+        snapshot_interval = 10  # Send snapshot every 10 seconds
 
         while True:
             if not self.cap.isOpened():
                 add_vertical_space(5)
-                st.markdown(body=f'<h4 style="text-position:center; color:orange;">Error: Could not open webcam. \
+                st.markdown(body=f'<h4 style="text-align: center; color: orange;">Error: Could not open webcam. \
                                     Please ensure your webcam is connected and try again</h4>', 
                             unsafe_allow_html=True)
                 break
@@ -169,25 +191,26 @@ class DrawInAir:
             self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
             stframe.image(self.img, channels="RGB")
 
+            # Send proctoring event and snapshot
+            current_time = time.time()
             if sum(self.fingers) == 2 and self.fingers[1] == self.fingers[2] == 1:
                 result = self.analyze_image_with_genai()
                 result_placeholder.write(f"Result: {result}")
+                self.send_proctoring_event("image_analysis_triggered")
+            if current_time - last_snapshot_time >= snapshot_interval:
+                self.send_webcam_snapshot()
+                last_snapshot_time = current_time
 
         self.cap.release()
         cv2.destroyAllWindows()
 
-
 def image_reader():
     st.header("Image Reader Application")
-
-    api_key = GOOGLE_API_KEY
-    genai.configure(api_key=api_key)
-
+    genai.configure(api_key=GOOGLE_API_KEY)
     def get_gemini_response(input_text, image, prompt):
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content([input_text, image[0], prompt])
         return response.text
-
     def input_image_setup(uploaded_file):
         if uploaded_file is not None:
             bytes_data = uploaded_file.getvalue()
@@ -195,7 +218,6 @@ def image_reader():
             return image_parts
         else:
             raise FileNotFoundError("No file uploaded")
-
     uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
     input_text = st.text_area("Input Text", height=100)
     if st.button("Analyze Image"):
@@ -207,11 +229,9 @@ def image_reader():
         except Exception as e:
             st.error(str(e))
 
-
 def plot_crafter():
     st.header("Plot Crafter Application")
     st.write("This section generates a plot for your game or story.")
-    
     game_prompt = st.text_area("Enter the game plot or theme:", height=150)
     if st.button("Generate Plot"):
         genai.configure(api_key=GOOGLE_API_KEY)
@@ -220,11 +240,9 @@ def plot_crafter():
         response = model.generate_content([prompt])
         st.text_area("Generated Plot", response.text, height=300)
 
-
 def main_app():
-    st.title("GenerativeAI-Powered Applications -By Team HackX")
+    st.title("GenerativeAI-Powered Applications - By Team HackX")
     app_mode = st.selectbox("Choose an application:", ["DrawInAir", "Image Reader", "Plot Crafter"])
-    
     if app_mode == "DrawInAir":
         drawinair = DrawInAir()
         drawinair.streamlit_config()
