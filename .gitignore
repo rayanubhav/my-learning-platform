@@ -1,15 +1,11 @@
 # .gitignore
-
-# Node.js/Frontend
 frontend/node_modules/
-frontend/build/
+backend/node_modules/
+frontend/dist/
+flask-backend/__pycache__/
+flask-backend/*.pyc
 frontend/.env
-
-# Python/Backend
-backend/__pycache__/
-backend/*.pyc
 backend/.env
-
-# General
+flask-backend/.env
 .DS_Store
 *.log
