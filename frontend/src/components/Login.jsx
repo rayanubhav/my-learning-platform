@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,7 +10,7 @@ function Login({ setUser, setToken }) {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -17,7 +18,7 @@ function Login({ setUser, setToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${expressApiUrl}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

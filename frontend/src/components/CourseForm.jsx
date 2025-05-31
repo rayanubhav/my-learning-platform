@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +12,7 @@ function CourseForm({ user, token }) {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -19,7 +20,7 @@ function CourseForm({ user, token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/courses', {
+      const res = await fetch(`${expressApiUrl}/api/courses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

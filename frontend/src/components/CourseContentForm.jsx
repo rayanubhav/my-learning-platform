@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -8,6 +9,7 @@ function CourseContentForm({ user, token }) {
   const [assignment, setAssignment] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
 
   const openUploadWidget = () => {
@@ -33,7 +35,7 @@ function CourseContentForm({ user, token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/${courseId}/content`, {
+      const res = await fetch(`${expressApiUrl}/api/courses/${courseId}/content`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

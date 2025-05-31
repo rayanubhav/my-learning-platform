@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -13,6 +14,7 @@ function CourseDetails({ user, token }) {
   const [error, setError] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [videoWatched, setVideoWatched] = useState(null);
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     if (!token || !user) {
@@ -22,7 +24,7 @@ function CourseDetails({ user, token }) {
 
     const fetchCourse = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+        const res = await fetch(`${expressApiUrl}/api/courses/${courseId}`, {
           headers: { 'x-auth-token': token },
         });
         if (!res.ok) throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
@@ -35,7 +37,7 @@ function CourseDetails({ user, token }) {
 
     const fetchSubmissions = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/assignment-submissions/course/${courseId}`, {
+        const res = await fetch(`${expressApiUrl}/api/assignment-submissions/course/${courseId}`, {
           headers: { 'x-auth-token': token },
         });
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -49,7 +51,7 @@ function CourseDetails({ user, token }) {
     const fetchProgress = async () => {
       if (user?.role !== 'student') return;
       try {
-        const res = await fetch(`http://localhost:5000/api/video-progress/${courseId}`, {
+        const res = await fetch(`${expressApiUrl}/api/video-progress/${courseId}`, {
           headers: { 'x-auth-token': token },
         });
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -67,7 +69,7 @@ function CourseDetails({ user, token }) {
 
   const markAsWatched = async (videoIndex) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/video-progress/${courseId}/${videoIndex}`, {
+      const res = await fetch(`${expressApiUrl}/api/video-progress/${courseId}/${videoIndex}`, {
         method: 'POST',
         headers: {
           'x-auth-token': token,

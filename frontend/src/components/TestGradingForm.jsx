@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,11 +8,12 @@ function TestGradingForm({ user, token }) {
   const [grade, setGrade] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/api/test-submissions/grade/${submissionId}`, {
+      const res = await fetch(`${expressApiUrl}/api/test-submissions/grade/${submissionId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

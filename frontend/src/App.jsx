@@ -108,7 +108,7 @@ function App() {
               <Link to="/my-courses" className="block py-2 px-4 hover:bg-gray-700">My Courses</Link>
               <Link to="/my-tests" className="block py-2 px-4 hover:bg-gray-700">My Tests</Link>
               <a
-                href="http://localhost:8501"
+                href="https://my-learning-platform-flask-backend.onrender.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block py-2 px-4 hover:bg-gray-700"

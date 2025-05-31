@@ -1,13 +1,14 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function MyCourses({ user, token }) {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     if (token && user) {
-      fetch('http://localhost:5000/api/courses/my-courses', {
+      fetch(`${expressApiUrl}/api/courses/my-courses`, {
         headers: { 'x-auth-token': token },
       })
         .then(res => {

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -6,7 +7,7 @@ function Tests({ user, token }) {
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
   const [error, setError] = useState('');
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     fetchTests();
   }, [courseId, token]);
@@ -29,7 +30,7 @@ function Tests({ user, token }) {
 
   const handleGenerateTest = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/tests/${courseId}/generate`, {
+      const res = await fetch(`${expressApiUrl}/api/tests/${courseId}/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

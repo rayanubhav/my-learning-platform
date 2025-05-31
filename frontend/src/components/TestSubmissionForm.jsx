@@ -1,9 +1,11 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function TestSubmissionForm({ user, token }) {
   const { courseId, testId } = useParams();
   const navigate = useNavigate();
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   const [test, setTest] = useState(null);
   const [error, setError] = useState('');
   const [answers, setAnswers] = useState({});
@@ -11,10 +13,11 @@ function TestSubmissionForm({ user, token }) {
   const [warnings, setWarnings] = useState(0);
   const MAX_WARNINGS = 3;
 
+
   useEffect(() => {
     const fetchTest = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/tests/test/${testId}`, {
+        const res = await fetch(`${expressApiUrl}/api/tests/test/${testId}`, {
           headers: { 'x-auth-token': token },
         });
         const data = await res.json();
@@ -112,7 +115,7 @@ function TestSubmissionForm({ user, token }) {
     alert(`Warning: ${message}. This is warning ${warnings + 1} of ${MAX_WARNINGS}.`);
 
     try {
-      await fetch('http://localhost:5000/api/tests/log-suspicious-activity', {
+      await fetch(`${expressApiUrl}/api/tests/log-suspicious-activity`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -151,7 +154,7 @@ function TestSubmissionForm({ user, token }) {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/tests/${testId}/submit`, {
+      const res = await fetch(`${expressApiUrl}/api/tests/${testId}/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

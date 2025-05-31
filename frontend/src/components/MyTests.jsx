@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -5,11 +7,12 @@ function MyTests({ user, token }) {
   const [tests, setTests] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/tests/my-tests', {
+        const res = await fetch(`${expressApiUrl}/api/tests/my-tests`, {
           headers: {
             'x-auth-token': token,
           },

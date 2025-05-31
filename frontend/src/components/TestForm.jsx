@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,11 +13,12 @@ function TestForm({ user, token }) {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/courses/my-courses', {
+        const res = await fetch(`${expressApiUrl}/api/courses/my-courses`, {
           headers: {
             'x-auth-token': token,
           },
@@ -49,7 +51,7 @@ function TestForm({ user, token }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('http://localhost:5000/api/tests', {
+      const res = await fetch(`${expressApiUrl}/api/tests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

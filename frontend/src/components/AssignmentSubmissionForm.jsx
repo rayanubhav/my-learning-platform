@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -11,7 +12,7 @@ function AssignmentSubmissionForm({ user, token }) {
   const [pdfUrl, setPdfUrl] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '';
 
   const openVideoUploadWidget = () => {
@@ -92,7 +93,7 @@ function AssignmentSubmissionForm({ user, token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/api/assignment-submissions/course/${courseId}`, {
+      const res = await fetch(`${expressApiUrl}/api/assignment-submissions/course/${courseId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

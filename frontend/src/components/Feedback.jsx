@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
@@ -5,11 +6,11 @@ function Feedback({ user, token }) {
   const { courseId } = useParams();
   const [feedbacks, setFeedbacks] = useState([]);
   const [error, setError] = useState('');
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     if (token && user) {
       console.log('Fetching feedback for course:', courseId);
-      fetch(`http://localhost:5000/api/feedback/course/${courseId}`, {
+      fetch(`${expressApiUrl}/api/feedback/course/${courseId}`, {
         headers: { 'x-auth-token': token },
       })
         .then(res => {

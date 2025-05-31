@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,7 +11,7 @@ function FeedbackForm({ user, token }) {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -18,7 +19,7 @@ function FeedbackForm({ user, token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/api/feedback/course/${courseId}`, {
+      const res = await fetch(`${expressApiUrl}/api/feedback/course/${courseId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

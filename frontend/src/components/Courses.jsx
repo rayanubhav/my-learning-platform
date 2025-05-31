@@ -1,12 +1,13 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function Courses({ user, token }) {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
-
+  const expressApiUrl = process.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
-    fetch('http://localhost:5000/api/courses')
+    fetch(`${expressApiUrl}/api/courses`)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
         return res.json();
@@ -21,7 +22,7 @@ function Courses({ user, token }) {
 
   const enroll = async (courseId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/enroll/${courseId}`, {
+      const res = await fetch(`${expressApiUrl}/api/courses/enroll/${courseId}`, {
         method: 'POST',
         headers: { 'x-auth-token': token },
       });
