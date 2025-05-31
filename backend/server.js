@@ -29,7 +29,7 @@ connectDB();
 
 // CORS configuration
 const allowedOrigins = [
-  process.env.FRONTEND_URL, // Deployed React frontend (e.g., https://education-platform-frontend.onrender.com)
+  'https://my-learning-platform-app.vercel.app/', // Deployed React frontend (e.g., https://education-platform-frontend.onrender.com)
   'http://localhost:5173', // Local React frontend
   'http://localhost:8501', // Local Streamlit app
   'https://my-learning-platform-flask-backend.onrender.com', // Deployed Streamlit app (if applicable)
