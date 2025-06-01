@@ -7,14 +7,14 @@ function Tests({ user, token }) {
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
   const [error, setError] = useState('');
-  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.VITE_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     fetchTests();
   }, [courseId, token]);
 
   const fetchTests = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/tests/${courseId}`, {
+      const res = await fetch(`${expressApiUrl}/api/tests/${courseId}`, {
         headers: { 'x-auth-token': token },
       });
       const data = await res.json();

@@ -14,7 +14,7 @@ function CourseDetails({ user, token }) {
   const [error, setError] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [videoWatched, setVideoWatched] = useState(null);
-  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.VITE_EXPRESS_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     if (!token || !user) {

@@ -13,7 +13,7 @@ function TestForm({ user, token }) {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.VITE_EXPRESS_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchCourses = async () => {

@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 function TestSubmissionForm({ user, token }) {
   const { courseId, testId } = useParams();
   const navigate = useNavigate();
-  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.VITE_EXPRESS_API_URL || 'http://localhost:5000';
   const [test, setTest] = useState(null);
   const [error, setError] = useState('');
   const [answers, setAnswers] = useState({});

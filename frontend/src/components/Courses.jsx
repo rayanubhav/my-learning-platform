@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 function Courses({ user, token }) {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
-  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.VITE_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     fetch(`${expressApiUrl}/api/courses`)
       .then(res => {

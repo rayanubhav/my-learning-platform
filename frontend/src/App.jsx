@@ -25,13 +25,13 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
+  const expressApiUrl = import.meta.env.VITE_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     const fetchUser = async () => {
       if (token) {
         console.log('Verifying token:', token);
         try {
-          const res = await fetch('http://localhost:5000/api/auth/me', {
+          const res = await fetch(`${expressApiUrl}/api/auth/me`, {
             headers: { 'x-auth-token': token },
           });
           const data = await res.json();

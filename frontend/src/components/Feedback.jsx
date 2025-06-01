@@ -6,7 +6,7 @@ function Feedback({ user, token }) {
   const { courseId } = useParams();
   const [feedbacks, setFeedbacks] = useState([]);
   const [error, setError] = useState('');
-  const expressApiUrl = import.meta.env.REACT_APP_EXPRESS_API_URL || 'http://localhost:5000';
+  const expressApiUrl = import.meta.env.VITE_EXPRESS_API_URL || 'http://localhost:5000';
   useEffect(() => {
     if (token && user) {
       console.log('Fetching feedback for course:', courseId);
