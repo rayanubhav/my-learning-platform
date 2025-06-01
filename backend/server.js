@@ -11,15 +11,14 @@ connectDB();
 
 // CORS configuration
 const allowedOrigins = [
-  'https://my-learning-platform-app.vercel.app', // Deployed React frontend (no trailing slash)
-  'http://localhost:5173', // Local React frontend
-  'http://localhost:8501', // Local Streamlit app
-  'https://my-learning-platform-flask-backend.onrender.com', // Deployed Streamlit app
-].filter(Boolean); // Remove undefined/null values
+  'https://my-learning-platform-app.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:8501',
+  'https://my-learning-platform-flask-backend.onrender.com',
+].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Log the origin for debugging
     console.log('Request Origin:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -28,26 +27,37 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Explicitly allow OPTIONS for preflight requests
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'], // Include x-auth-token for authenticated requests
-  credentials: true, // If using cookies or JWT with credentials
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
+  credentials: true,
 }));
 
-// Handle preflight requests explicitly
-app.options('*', cors()); // Respond to all OPTIONS requests with CORS headers
+app.options('*', cors());
 
 // Init Middleware
 app.use(express.json({ extended: false }));
 
-// Define Routes
-app.use('/api/users', require('./routes/users'));
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/courses', require('./routes/courses'));
-app.use('/api/tests', require('./routes/tests'));
-app.use('/api/feedback', require('./routes/feedback'));
-app.use('/api/test-submissions', require('./routes/testSubmissions'));
-app.use('/api/assignment-submissions', require('./routes/assignmentSubmissions'));
-app.use('/api/video-progress', require('./routes/videoProgress'));
+// Define Routes with Debugging
+const routes = [
+  { path: '/api/users', handler: require('./routes/users') },
+  { path: '/api/auth', handler: require('./routes/auth') },
+  { path: '/api/courses', handler: require('./routes/courses') },
+  { path: '/api/tests', handler: require('./routes/tests') },
+  { path: '/api/feedback', handler: require('./routes/feedback') },
+  { path: '/api/test-submissions', handler: require('./routes/testSubmissions') },
+  { path: '/api/assignment-submissions', handler: require('./routes/assignmentSubmissions') },
+  { path: '/api/video-progress', handler: require('./routes/videoProgress') },
+];
+
+routes.forEach(({ path, handler }) => {
+  console.log(`Registering routes for ${path}`);
+  try {
+    app.use(path, handler);
+  } catch (err) {
+    console.error(`Error registering routes for ${path}:`, err.message);
+    throw err; // Re-throw to stop the server and catch the issue
+  }
+});
 
 // Test route
 app.get('/', (req, res) => {
