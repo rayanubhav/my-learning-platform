@@ -1,28 +1,17 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import { v2 as cloudinary } from 'cloudinary';
-
-import connectDB from './config/db.js';
-import usersRoutes from './routes/users.js';
-import authRoutes from './routes/auth.js';
-import coursesRoutes from './routes/courses.js';
-import testsRoutes from './routes/tests.js';
-import feedbackRoutes from './routes/feedback.js';
-import testSubmissionsRoutes from './routes/testSubmissions.js';
-import assignmentSubmissionsRoutes from './routes/assignmentSubmissions.js';
-import videoProgressRoutes from './routes/videoProgress.js';
-
-dotenv.config();
+const express = require('express');
+require('dotenv').config();
+const connectDB = require('./config/db');
+const cors = require('cors');
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
 
 // Configure Cloudinary
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Connect Database
 connectDB();
@@ -52,14 +41,14 @@ app.use(cors({
 app.use(express.json({ extended: false }));
 
 // Define Routes
-app.use('/api/users', usersRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/courses', coursesRoutes);
-app.use('/api/tests', testsRoutes);
-app.use('/api/feedback', feedbackRoutes);
-app.use('/api/test-submissions', testSubmissionsRoutes);
-app.use('/api/assignment-submissions', assignmentSubmissionsRoutes);
-app.use('/api/video-progress', videoProgressRoutes);
+app.use('/api/users', require('./routes/users'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/courses', require('./routes/courses'));
+app.use('/api/tests', require('./routes/tests'));
+app.use('/api/feedback', require('./routes/feedback'));
+app.use('/api/test-submissions', require('./routes/testSubmissions'));
+app.use('/api/assignment-submissions', require('./routes/assignmentSubmissions'));
+app.use('/api/video-progress', require('./routes/videoProgress'));
 
 // Test route
 app.get('/', (req, res) => {
